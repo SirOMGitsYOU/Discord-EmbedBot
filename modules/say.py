@@ -70,7 +70,7 @@ class SayModule(Module):
         await self._prompt_ping(data)
 
     async def _prompt_ping(self, data):
-        """Part of the .say command. Prompts whether everyone should be pinged.
+        """Part of the .say command. Prompts whether @.here should be pinged.
 
         Args:
             data: The session data for this command.
@@ -81,17 +81,17 @@ class SayModule(Module):
             await self._prompt_color(data)
             return
 
-        await msg.channel.send("Do you want to ping everyone in the target"
+        await msg.channel.send("Do you want to ping @.here in the target"
                                + " channel? [Yes/No]")
         response = await self._input(msg.author, msg.channel)
         if response is None:
             return
 
         ping = False
-        confirm = "Will not ping everyone in the target channel."
+        confirm = "Will not ping @.here in the target channel."
         if response.content.lower() == "yes":
             ping = True
-            confirm = "Will ping everyone in the target channel."
+            confirm = "Will ping @.here in the target channel."
         await msg.channel.send(confirm)
 
         data["ping"] = ping
@@ -213,7 +213,7 @@ class SayModule(Module):
                              data["fields"])
         headline = "**THIS IS HOW YOUR EMBED WILL LOOK LIKE**"
         if data["ping"]:
-            headline += "\n(Will also ping everyone in the target channel)"
+            headline += "\n(Will also ping @.here in the target channel)"
         await msg.channel.send(headline, embed=embed)
 
         await msg.channel.send("Confirm sending this embed? [Yes/Abort]")
@@ -224,7 +224,7 @@ class SayModule(Module):
         if response.content.lower() == "yes":
             tagline = ""
             if data["ping"]:
-                tagline = "@everyone"
+                tagline = "@here"
             await data["channel"].send(tagline, embed=embed)
         else:
             await msg.channel.send("Action aborted.")
