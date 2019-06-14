@@ -16,10 +16,17 @@ class SayModule(Module):
         if cmd != "say":
             return
 
-        perms = msg.channel.permissions_for(msg.author)
-        if not perms.manage_messages:
-            await self._perm_error(msg.channel, "manage_messages",
-                                   "this channel")
+        roles = {
+            "Modpack Developer",
+            "Admin",
+            "Founder"
+        }
+        allowed = False
+        for role in msg.author.roles:
+            if role.name in roles:
+                allowed = True
+        if not allowed:
+            await msg.channel.send("Permission denied.")
             return
 
         data = {
