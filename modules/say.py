@@ -16,10 +16,17 @@ class SayModule(Module):
         if cmd != "say":
             return
 
-        perms = msg.channel.permissions_for(msg.author)
-        if not perms.manage_messages:
-            await self._perm_error(msg.channel, "manage_messages",
-                                   "this channel")
+        roles = {
+            "Modpack Developer",
+            "Admin",
+            "Founder"
+        }
+        allowed = False
+        for role in msg.author.roles:
+            if role.name in roles:
+                allowed = True
+        if not allowed:
+            await msg.channel.send("Permission denied.")
             return
 
         data = {
@@ -52,19 +59,6 @@ class SayModule(Module):
             return
 
         channel = response.channel_mentions[0]
-        perms = channel.permissions_for(msg.author)
-        if not perms.manage_messages:
-            await self._perm_error(msg.channel, "manage_messages",
-                                   "the target channel")
-            return
-        if not perms.send_messages:
-            await self._perm_error(msg.channel, "send_messages",
-                                   "the target channel")
-            return
-        if not perms.embed_links:
-            await self._perm_error(msg.channel, "embed_links",
-                                   "the target channel")
-            return
 
         data["channel"] = channel
         await self._prompt_ping(data)
@@ -76,10 +70,6 @@ class SayModule(Module):
             data: The session data for this command.
         """
         msg = data["msg"]
-        perms = data["channel"].permissions_for(msg.author)
-        if not perms.mention_everyone:
-            await self._prompt_color(data)
-            return
 
         await msg.channel.send("Do you want to ping everyone in the target"
                                + " channel? [Yes/No]")
